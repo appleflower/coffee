@@ -1,0 +1,18 @@
+﻿
+# Asetukset
+/settings.json
+/reload.bat
+
+# Runtimessä muutettavat tiedostot
+/cd_fail.json
+/mods/brewers2.p
+/mods/brew_que.p
+/mods/illuminati.p
+
+# Logifilut ja arkistot
+*.log
+*.rar
+
+# Rahkan megaskripti
+/run
+

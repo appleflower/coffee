@@ -1,0 +1,183 @@
+<coffee>
+    <null>
+        <l>luultavasti</l>
+        <l>joten</l>
+        <l>tämän takia</l>
+        <l>kuitenkin</l>
+        <l>oletettavasti</l>
+        <l>näin</l>
+        <l>ja</l>
+        <l>ja</l>
+        <l>ja</l>
+        <l>ja</l>
+
+        <a>ihan ok</a>
+        <a>aika kuraa</a>
+        <a>aha</a>
+        <a>mitä tähän nyt sanois</a>
+        <a>jaa</a>
+        <a>ok</a>
+        <a>olen pettynyt</a>
+        <a>muikea tais olla jo</a>
+        <a>muikeaa</a>
+        <a>bueno</a>
+
+
+    </null>
+    <lvl1>
+        <adj>paskalta</adj>
+        <adj>kuralta</adj>
+        <adj>kiveksiltä</adj>
+        <adj>kuselta</adj>
+        <adj>spermalta</adj>
+        <adj>penikseltä</adj>
+        <adj>anaalilta</adj>
+        <adj>kakalta</adj>
+        <adj>hieltä</adj>
+        <adj>hiekalta</adj>
+        <adj>oudolta</adj>
+
+        <teko>näit taivaalla ufon</teko>
+        <teko>sait sydänkohtauksen</teko>
+        <teko>sinulla oli huutava paskahätä</teko>
+        <teko>sinulla oli krapula</teko>
+        <teko>kätesi tärisivät</teko>
+        <teko>et nähny eteesi</teko>
+        <teko>kahvipannusi oli homeessa</teko>
+        <teko>kahvimukisi oli homeessa</teko>
+        <teko>joku oli kusenut kahvipuruihin</teko>
+        <teko>et käyttänyt suodatinpussia</teko>
+        <teko>joit suoraan pannusta</teko>
+        <teko>näit edellisenä yönä painajaisia kahvi-demoneista</teko>
+        <teko>muistit että olet hyödytön yhteiskunnan jäsen</teko>
+        <teko>kahvipannussa oli reikä</teko>
+        <teko>äänet päässäsi eivät jättäneet sinua rauhaan</teko>
+        <teko>keitit vanhoilla kahvipuruilla</teko>
+        <teko>annoit kaverin tehdä kahvit</teko>
+        <teko>uudelleenlämmitit eilistä kahvia</teko>
+
+
+    </lvl1>
+    <lvl2>
+        <adj>puulta</adj>
+        <adj>laimealta</adj>
+        <adj>vedeltä</adj>
+        <adj>kitkerältä</adj>
+        <adj>kuivalta</adj>
+        <adj>makealta</adj>
+
+        <teko>mittasit ainekset suurinpiirtein oikein</teko>
+        <teko>muistit laittaa kahvipannun keittimen alle</teko>
+        <teko>olit tarpeeksi hereillä keittäessäsi kahvia</teko>
+        <teko>annoit kaverin tehdä kahvit</teko>
+        <teko>muistit laittaa suodatinpussin keittimeen</teko>
+        <teko>keitit Jubelius-mokkaa</teko>
+    </lvl2>
+
+    <lvl3>
+        <adj>lempeältä</adj>
+        <adj>raikkaalta</adj>
+        <adj>virkistävältä</adj>
+        <adj>tummalta</adj>
+        <adj>kermaiselta</adj>
+        <adj>ihan ok:lta</adj>
+
+
+        <teko>annoit kaverin tehdä kahvit</teko>
+        <teko>käytit kallista premium-kahvia</teko>
+        <teko>ostit uuden kahvinkeittimen</teko>
+        <teko>käytit luomu kahvia</teko>
+        <teko>laitoit kahviin inkivääriä</teko>
+        <teko>käytit luomu suodatinpusseja</teko>
+        <teko>pesit kahvinkeittimen</teko>
+        <teko>katsoit youtubesta tutorialin</teko>
+
+    </lvl3>
+
+    <lvl4>
+        <adj>hyvältä</adj>
+        <adj>miltei täydelliseltä</adj>
+        <adj>ammattilaisen tekemältä</adj>
+        <adj>paremmalta kuin eilen</adj>
+        <adj>muikealta</adj>
+
+        <teko>heräsit aamulla aikaisin pesemään kahvipavut</teko>
+        <teko>kasvatit omat pavut</teko>
+        <teko>opiskelit kahvitieteitä koulussa vuosia</teko>
+        <teko>annoit kaverin tehdä kahvit</teko>
+        <teko>mittasit kahvipavut gramman tarkkuudella</teko>
+        <teko>haudutit kahvia juuri oikean ajan</teko>
+    </lvl4>
+
+    <lvl5>
+        <adj>jumalalliselta</adj>
+        <adj>taivaalliselta</adj>
+        <adj>aksun tekemältä</adj>
+        <adj>täydelliseltä</adj>
+
+        <teko>pyysit aksua tekemään kahvit</teko>
+        <teko>rukoilit kahvi-jumalaa</teko>
+        <teko>uhrasit perheesi tätä tehdessä</teko>
+        <teko>kulutit nuoruutesi kahvi-koulussa</teko>
+        <teko>näit unta täydellisestä kahvista</teko>
+        <teko>kahvi-demoni riivasi sinut ja teit kiellettyä kahvia</teko>
+
+    </lvl5>
+
+    <item>
+        <pre>Iso</pre>
+        <pre>Taikurin</pre>
+        <pre>Kirottu</pre>
+        <pre>Dankki</pre>
+        <pre>Pieni</pre>
+        <pre>Kalteva</pre>
+        <pre>Hehkuva</pre>
+        <pre>Likainen</pre>
+        <pre>Puhdas</pre>
+        <pre>Punainen</pre>
+        <pre>Musta</pre>
+        <pre>Valkoinen</pre>
+        <pre>Sininen</pre>
+        <pre>Keltainen</pre>
+        <pre>Vihreä</pre>
+        <pre>Ruma</pre>
+        <pre>Kaunis</pre>
+        <pre>Elävä</pre>
+        <pre>Kuollut</pre>
+        <pre>Zombie</pre>
+        <pre>Varastettu</pre>
+        <pre>Kallis</pre>
+        <pre>Halpa</pre>
+
+        <end>Pannu</end>
+        <end>Pöytäliina</end>
+        <end>Muki</end>
+        <end>Keitin</end>
+        <end>Pökäle</end>
+        <end>Papu</end>
+        <end>Tupakka</end>
+        <end>Limu</end>
+        <end>Kahvipapu</end>
+        <end>Moccamaster</end>
+        <end>Lusikka</end>
+        <end>Lautanen</end>
+        <end>Dragory</end>
+        <end>Aksu</end>
+        <end>spitti</end>
+        <end>Aile</end>
+        <end>Mikro</end>
+        <end>Preda</end>
+        <end>Vince</end>
+        <end>Tirde</end>
+        <end>Jani</end>
+        <end>Juhis</end>
+        <end>Veri</end>
+        <end>Jake</end>
+        <end>Kytö</end>
+
+
+
+    </item>
+
+</coffee>
+
