@@ -140,6 +140,12 @@ def brew_cancel(bot, update, args):
     p = packet(update, args)
     bot.sendMessage(p["id"],man.brew_cancel(p))
 
+def msg_que(bot):
+    if len(man.msg_que) != 0:
+        for x in man.msg_que:
+            bot.sendMessage(id_test, x)
+        man.msg_que = []
+
 
 
 def main():
@@ -149,6 +155,7 @@ def main():
     j_que = updater.job_queue
     j_que.put(brew_timer, 1)
     j_que.put(illumi_time, 2)
+    j_que.put(msg_que, 10)
     print("Brew 0.8 + Items&Drops DLC + ILLUMICOFFEE")
 
     dp.addTelegramCommandHandler("brew", brew)

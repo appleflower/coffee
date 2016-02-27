@@ -11,6 +11,7 @@ from math import sqrt
 class manager:
     def __init__(self):
         self.best_coffee = 0
+        self.msg_que = []
 
         try:
             with open("settings.json", "r") as f:
@@ -157,6 +158,14 @@ class manager:
                                         "name": p["name"]}
 
             self.save_file()
+
+            if timer == 600:
+                now = datetime.datetime.now().time()
+                time_morning = datetime.time(hour= 4, minute= 0)
+                time_evening = datetime.time(hour= 22, minute= 0)
+
+                if now > time_evening or now < time_morning:
+                    self.msg_que.append("HYVÄÄ YÖTÄ %s" % p["name"].upper())
 
             if timer <= 60:
                 return "Kahvisi on valmista %s minuutissa" % timer
