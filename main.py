@@ -144,7 +144,7 @@ def brew_cancel(bot, update, args):
 
 def main():
     updater = Updater(man.settings["authkey"]) #brew bot
-    #updater = Updater("153444739:AAEi7X-cLpDH-n1tT8ZY0McSKg27hKikM5E") #gmf rpg
+    #updater = Updater(man.settings["authkey_gmfrpg"]) #gmf rpg
     dp = updater.dispatcher
     j_que = updater.job_queue
     j_que.put(brew_timer, 1)
