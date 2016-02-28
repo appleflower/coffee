@@ -124,60 +124,171 @@
 
     </lvl5>
 
-    <item>
-        <pre>Iso</pre>
-        <pre>Taikurin</pre>
-        <pre>Kirottu</pre>
-        <pre>Dankki</pre>
-        <pre>Pieni</pre>
-        <pre>Kalteva</pre>
-        <pre>Hehkuva</pre>
-        <pre>Likainen</pre>
-        <pre>Puhdas</pre>
-        <pre>Punainen</pre>
-        <pre>Musta</pre>
-        <pre>Valkoinen</pre>
-        <pre>Sininen</pre>
-        <pre>Keltainen</pre>
-        <pre>Vihreä</pre>
-        <pre>Ruma</pre>
-        <pre>Kaunis</pre>
-        <pre>Elävä</pre>
-        <pre>Kuollut</pre>
-        <pre>Zombie</pre>
-        <pre>Varastettu</pre>
-        <pre>Kallis</pre>
-        <pre>Halpa</pre>
+    <grades>
+        <grade prob="100" name="Trash"     stat_count="1" stat_mult="1" />
+        <grade prob="50"  name="Common"    stat_count="2" stat_mult="2" />
+        <grade prob="20"  name="Rare"      stat_count="3" stat_mult="3" />
+        <grade prob="10"  name="Epic"      stat_count="4" stat_mult="4" />
+        <grade prob="5"   name="Celestial" stat_count="5" stat_mult="5" />
+    </grades>
 
-        <end>Pannu</end>
-        <end>Pöytäliina</end>
-        <end>Muki</end>
-        <end>Keitin</end>
-        <end>Pökäle</end>
-        <end>Papu</end>
-        <end>Tupakka</end>
-        <end>Limu</end>
-        <end>Kahvipapu</end>
-        <end>Moccamaster</end>
-        <end>Lusikka</end>
-        <end>Lautanen</end>
-        <end>Dragory</end>
-        <end>Aksu</end>
-        <end>spitti</end>
-        <end>Aile</end>
-        <end>Mikro</end>
-        <end>Preda</end>
-        <end>Vince</end>
-        <end>Tirde</end>
-        <end>Jani</end>
-        <end>Juhis</end>
-        <end>Veri</end>
-        <end>Jake</end>
-        <end>Kytö</end>
+    <prefixes>
+        <!-- 1 stat -->
+        <prefix prob="100" name="Zombie">
+            <stat>score</stat>
+        </prefix>
+        <prefix prob="100" name="Likainen">
+            <stat>exp</stat>
+        </prefix>
+        <prefix prob="100" name="Kirottu">
+            <stat>drop</stat>
+        </prefix>
+        <prefix prob="100" name="Halpa">
+            <stat>grade</stat>
+        </prefix>
 
+        <prefix prob="100" name="Troll">
+            <stat>grade</stat>
+            <stat>grade</stat>
+            <stat>grade</stat>
+            <stat>grade</stat>
+            <stat>grade</stat>
+        </prefix>
 
+        <!-- 2 stats -->
+        <prefix prob="50" name="Elävä">
+            <stat>score</stat>
+            <stat>exp</stat>
+        </prefix>
+        <prefix prob="50" name="Kuollut">
+            <stat>drop</stat>
+            <stat>grade</stat>
+        </prefix>
+        <prefix prob="50" name="Puhdas">
+            <stat>exp</stat>
+            <stat>grade</stat>
+        </prefix>
+        <prefix prob="50" name="Varastettu">
+            <stat>score</stat>
+            <stat>drop</stat>
+        </prefix>
 
-    </item>
+        <!-- 3 stats -->
+        <prefix prob="25" name="Iso">
+            <stat>grade</stat>
+            <stat>exp</stat>
+            <stat>drop</stat>
+        </prefix>
+        <prefix prob="25" name="Taikurin">
+            <stat>exp</stat>
+            <stat>drop</stat>
+            <stat>score</stat>
+        </prefix>
+        <prefix prob="25" name="Kallis">
+            <stat>score</stat>
+            <stat>grade</stat>
+            <stat>drop</stat>
+        </prefix>
+        <prefix prob="25" name="Kaunis">
+            <stat>grade</stat>
+            <stat>exp</stat>
+            <stat>score</stat>
+        </prefix>
+
+        <!-- 4 stats -->
+        <prefix prob="10" name="Hehkuva">
+            <stat>exp</stat>
+            <stat>score</stat>
+            <stat>grade</stat>
+            <stat>drop</stat>
+        </prefix>
+        <prefix prob="10" name="Värisevä">
+            <stat>score</stat>
+            <stat>exp</stat>
+            <stat>drop</stat>
+            <stat>grade</stat>
+        </prefix>
+        <prefix prob="10" name="Atominen">
+            <stat>drop</stat>
+            <stat>grade</stat>
+            <stat>score</stat>
+            <stat>exp</stat>
+        </prefix>
+        <prefix prob="10" name="Loistava">
+            <stat>exp</stat>
+            <stat>drop</stat>
+            <stat>grade</stat>
+            <stat>score</stat>
+        </prefix>
+
+        <!-- 5 stats -->
+        <prefix prob="5" name="Uskomaton">
+            <stat>score</stat>
+            <stat>score</stat> <!-- 2x score for EXTRA SCORE -->
+            <stat>exp</stat>
+            <stat>drop</stat>
+            <stat>grade</stat>
+        </prefix>
+        <prefix prob="5" name="Hämmästyttävä">
+            <stat>exp</stat>
+            <stat>exp</stat> <!-- 2x exp for EXTRA EXP -->
+            <stat>score</stat>
+            <stat>drop</stat>
+            <stat>grade</stat>
+        </prefix>
+        <prefix prob="5" name="Ällistyttävä">
+            <stat>drop</stat>
+            <stat>drop</stat> <!-- 2x drop for EXTRA DROP -->
+            <stat>score</stat>
+            <stat>exp</stat>
+            <stat>grade</stat>
+        </prefix>
+        <prefix prob="5" name="Suurenmoinen">
+            <stat>grade</stat>
+            <stat>grade</stat> <!-- 2x grade for EXTRA GRADE -->
+            <stat>score</stat>
+            <stat>exp</stat>
+            <stat>drop</stat>
+        </prefix>
+
+        <!-- What is this I don't even -->
+        <prefix prob="1" name="Mahdoton">
+            <stat>score</stat>
+            <stat>score</stat>
+            <stat>score</stat>
+            <stat>score</stat>
+            <stat>score</stat>
+        </prefix>
+    </prefixes>
+
+    <item_names>
+        <name>Pannu</name>
+        <name>Termoskannu</name>
+        <name>Pöytäliina</name>
+        <name>Muki</name>
+        <name>Keitin</name>
+        <name>Pökäle</name>
+        <name>Papu</name>
+        <name>Tupakka</name>
+        <name>Limu</name>
+        <name>Kahvipapu</name>
+        <name>Moccamaster</name>
+        <name>Lusikka</name>
+        <name>Lautanen</name>
+        <name>Dragory</name>
+        <name>Aksu</name>
+        <name>spitti</name>
+        <name>Aile</name>
+        <name>Mikro</name>
+        <name>Preda</name>
+        <name>Vince</name>
+        <name>Tirde</name>
+        <name>Jani</name>
+        <name>Juhis</name>
+        <name>Veri</name>
+        <name>Jake</name>
+        <name>Kytö</name>
+    </item_names>
 
 </coffee>
 

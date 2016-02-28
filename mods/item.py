@@ -8,6 +8,15 @@ class item:
         self.consumables = []
         self.item_que = None
 
+        try:
+            self.item_attrs = etree.parse("mods/text.xml").getroot()
+        except FileNotFoundError:
+            self.item_attrs = etree.parse("text.xml").getroot()
+
+        self.grades = self.item_attrs.find("grades")
+        self.prefixes = self.item_attrs.find("prefixes")
+        self.item_names = [x.text for x in self.item_attrs.find("item_names").findall("name")]
+
     def item_drop(self):
         res = self.create_item()
         if len(self.items) < 4:
@@ -42,30 +51,39 @@ class item:
         elif c_type == "drop":
             return grade * 10
 
+    def get_random_by_prob(self, items):
+        total = sum(int(item.get("prob")) for item in items)
+        rand = randint(1, total)
+
+        for item in items:
+            prob = int(item.get("prob"));
+            if rand <= prob:
+                return item
+
+            rand -= prob
+
+        return None
+
     def create_item(self):
-        grade_prob = {0: 100, 1: 50, 2: 20, 3: 10, 4: 5}
-        grade_text = {0: "Trash", 1: "Common", 2: "Rare", 3: "Epic", 4: "Celestial"}
-        grade = None
-        while grade is None:
-            for x in grade_prob:
-                chance = randint(0, sum(grade_prob.values()))
-                if grade_prob[x] > chance:
-                    grade = x
+        # Randomize grade, prefix and name
+        # Grade and prefix use weighted randoming according to their "prob" attribute
+        grade = self.get_random_by_prob(self.grades)
+        prefix = self.get_random_by_prob(self.prefixes)
+        name = choice(self.item_names)
 
-        try:
-            e_root = etree.parse("mods/text.xml").getroot()
-        except FileNotFoundError:
-            e_root = etree.parse("text.xml").getroot()
-        n_1 = choice(e_root[6].findall("pre")).text
-        n_2 = choice(e_root[6].findall("end")).text
-        item_name = n_1 + " " + n_2
+        full_name = prefix.get("name") + " " + name
 
-        affix = {"exp": 0, "score": 0, "grade": 0, "drop": 0}
-        for x in range(grade + 1):
-            stat = ["exp", "score", "grade", "drop"]
-            affix[choice(stat)] += randint(1, 5) * (grade + 1)
+        # Set the item's stats according to the prefix
+        # The higher the grade, the more of the prefix's stats get applied
+        stats = {"exp": 0, "score": 0, "grade": 0, "drop": 0}
+        available_stats = [x.text for x in prefix.findall("stat")]
+        max_stat_count = min(int(grade.get("stat_count")), len(available_stats))
 
-        return {"name": item_name, "affix": affix, "type": grade_text[grade]}
+        for x in range(0, max_stat_count):
+            stat = available_stats[x]
+            stats[available_stats[x]] += 5 * int(grade.get("stat_mult"))
+
+        return {"name": full_name, "prefix": prefix.get("name"), "affix": stats, "type": grade.get("name")}
 
     def get_inv_txt(self):
         def get_bonuses(affix):
