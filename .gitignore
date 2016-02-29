@@ -1,4 +1,6 @@
 ﻿__pycache__
+__pycache__/
+__pycache__/*
 
 # Asetukset
 /settings.json
