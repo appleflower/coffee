@@ -73,12 +73,39 @@ class coffee():
             return_score = score
             minus = 0
             cur_time = datetime.now()
+
+            print("Current time:")
+            print(cur_time)
+            print("Last brew:")
+            print(self.last_brew)
+
             if self.last_brew != None:
                 if cur_time < self.last_brew + timedelta(minutes=10):
+                    print("cur_time < self.last_brew + timedelta(minutes=10)")
+                    print("cur_time:")
+                    print(cur_time)
+                    print("self.last_brew:")
+                    print(self.last_brew)
+                    print("self.last_brew + timedelta(minutes=10):")
+                    print(self.last_brew + timedelta(minutes=10))
                     minus = 90
                 elif cur_time < self.last_brew + timedelta(minutes=30):
+                    print("cur_time < self.last_brew + timedelta(minutes=30)")
+                    print("cur_time:")
+                    print(cur_time)
+                    print("self.last_brew:")
+                    print(self.last_brew)
+                    print("self.last_brew + timedelta(minutes=30):")
+                    print(self.last_brew + timedelta(minutes=30))
                     minus = 50
                 elif cur_time < self.last_brew + timedelta(minutes=60):
+                    print("cur_time < self.last_brew + timedelta(minutes=60)")
+                    print("cur_time:")
+                    print(cur_time)
+                    print("self.last_brew:")
+                    print(self.last_brew)
+                    print("self.last_brew + timedelta(minutes=60):")
+                    print(self.last_brew + timedelta(minutes=60))
                     minus = 10
                 else:
                     minus = 0
@@ -87,6 +114,9 @@ class coffee():
 
             if minus != 0:
                 return_score *= 1 - (minus / 100)
+
+            print("Hence, minus:")
+            print(minus)
 
             self.last_brew = datetime.now()
 
