@@ -49,7 +49,6 @@ class manager:
         except ValueError:
             self.top_brew = 0
 
-
     def human_number(self, number):
         if number < 1000:
             return number
@@ -72,9 +71,7 @@ class manager:
         for path, obj in d.items():
             with open(path, "wb") as outfile: pickle.dump(obj, outfile)
 
-
-
-    def brew_score(self, name):
+    def brew_score(self, p):
         top_score = []
         total_coffees = 0
 
@@ -111,7 +108,7 @@ class manager:
                     top_score[2][1],self.human_number(top_score[2][0]),
                     total_coffees)
 
-        return "Top Scores:\n{0}".format(top_score_txt)
+        self.msg_que.append((p["id"], "Top Scores:\n{0}".format(top_score_txt)))
 
     def brew_stats(self, p):
         if len(p["args"]) != 0:
@@ -119,9 +116,9 @@ class manager:
         else:
             name = p["name"]
         if name in self.brewers.keys():
-            return self.brewers[name].get_stats()
+            self.msg_que.append((p["id"], self.brewers[name].get_stats()))
         else:
-            return name + " ei ole keittänyt kahvia."
+            self.msg_que.append((p["id"],  name + " ei ole keittänyt kahvia."))
 
     def queue_coffee(self, p):
         def get_args(args):
@@ -168,24 +165,24 @@ class manager:
                     self.msg_que.append("HYVÄÄ YÖTÄ %s" % p["name"].upper())
 
             if timer <= 60:
-                return "Kahvisi on valmista %s minuutissa" % timer
+                self.msg_que.append((p["id"], "Kahvisi on valmista %s minuutissa" % timer))
             else:
                 done_h, done_m = str(due.hour), str(due.minute)
                 if len(done_h) == 1: done_h = "0" + done_h
                 if len(done_m) == 1: done_m = "0" + done_m
                 txt = "Kahvisi on valmista %s:%s" % (done_h, done_m)
-                return txt
+                self.msg_que.append((p["id"], txt))
         else:
             timer = self.brew_que[p["name"]]["due"]
             done_in = timer - datetime.datetime.now()
             if done_in.seconds < 3600:
-                return "Edellinen kahvisi on valmista %s minuutin päästä" % round(done_in.seconds / 60)
+                self.msg_que.append((p["id"],
+                                     "Edellinen kahvisi on valmista %s minuutin päästä" % round(done_in.seconds / 60)))
             else:
                 done = datetime.datetime.now() + datetime.timedelta(seconds=done_in.seconds)
-                return "Edellinen kahvisi on valmista %s:%s" % (done.hour, done.minute)
+                self.msg_que.append((p["id"], "Edellinen kahvisi on valmista %s:%s" % (done.hour, done.minute)))
 
     def brew(self, name, timer):
-
         score, txt = self.brewers[name].brew2(timer)
         if score > self.top_brew:
             txt += "\nNew top score!"
@@ -214,29 +211,32 @@ class manager:
     def brew_check(self, p):
         name = p["name"]
         if name not in self.brew_que.keys():
-            return "Et keitä tällä hetkellä kahvia"
+            self.msg_que.append((p["id"], "Et keitä tällä hetkellä kahvia"))
         else:
             timer = self.brew_que[p["name"]]["due"]
             done_in = timer - datetime.datetime.now()
             if done_in.seconds < 3600:
-                return "Edellinen kahvisi on valmista %s minuutin päästä" % round(done_in.seconds / 60)
+                self.msg_que.append((p["id"],
+                                     "Edellinen kahvisi on valmista %s minuutin päästä" % round(done_in.seconds / 60)))
             else:
                 done = datetime.datetime.now() + datetime.timedelta(seconds=done_in.seconds)
                 done_h, done_m = str(done.hour), str(done.minute)
                 if len(done_h) == 1: done_h = "0" + done_h
                 if len(done_m) == 1: done_m = "0" + done_m
-                return "Edellinen kahvisi on valmista %s:%s" % (done_h, done_m)
+                self.msg_que.append((p["id"],  "Edellinen kahvisi on valmista %s:%s" % (done_h, done_m)))
 
     def brew_inventory(self, p):
-        return self.brewers[p["name"]].inventory_view()
+        self.msg_que.append((p["id"], self.brewers[p["name"]].inventory_view()))
 
     def item_remove(self, p):
         try:
             slot = int(p["args"][0]) - 1
         except ValueError:
-            return "Error: not int."
+            self.msg_que.append((p["id"], "Error: not int."))
+            return
         if slot > 3:
-            return "Error: index over 4."
+            self.msg_que.append((p["id"],  "Error: index over 4."))
+            return
 
         if p["name"] in self.brewers.keys():
             if len(self.brewers[p["name"]].inventory.items) is not 0:
@@ -246,17 +246,19 @@ class manager:
                     r = "Error: no item in slot"
 
                 self.save_file()
-                return r
+                self.msg_que.append((p["id"],  r))
             else:
-                return "Sinulla ei ole itemeitä."
+                self.msg_que.append((p["id"],  "Sinulla ei ole itemeitä."))
 
     def cons_use(self, p):
         try:
             slot = int(p["args"][0]) - 1
         except ValueError:
-            return "Error: not int."
+            self.msg_que.append((p["id"], "Error: not int."))
+            return
         if slot > 3:
-            return "Error: index over 4."
+            self.msg_que.append((p["id"], "Error: index over 4."))
+            return
 
         if p["name"] in self.brewers.keys():
             if len(self.brewers[p["name"]].inventory.consumables) is not 0:
@@ -266,9 +268,9 @@ class manager:
                     r = "Error: no consumable in slot"
 
                 self.save_file()
-                return r
+                self.msg_que.append((p["id"], r))
             else:
-                return "Sinulla ei ole itemeitä."
+                self.msg_que.append((p["id"], "Sinulla ei ole itemeitä."))
 
     def brew_status(self):
         avgs = []
@@ -355,25 +357,28 @@ class manager:
         if re[0]:
             self.illumi_update_event_minus()
             self.save_file()
-            return "Uusi Illuminatin juoni:\n" \
+            txt = "Uusi Illuminatin juoni:\n" \
                    "{0}\n" \
                    "{1} -{2}%".format(re[1]["desc"],
                                       re[1]["attrb"].capitalize(),
                                       re[1]["potency"])
+            self.msg_que.append((None, txt))
         re = self.illuminati.time_check(False)
         if re == "nwo":
             self.brewers = {}
             self.brew_que = {}
             self.illuminati = illumicoffee.illuminati()
             self.save_file()
-            return "Illuminati sai valmiiksi New World Orderin ja kaikki kahvinkeittimet tuhottiin."
+            self.msg_que.append((None,
+                                 "Illuminati sai valmiiksi New World Orderin ja kaikki kahvinkeittimet tuhottiin."))
 
         elif re == "time machine":
             self.make_new_game()
-            return "Saitte aikakoneen valmiiksi ja pakenitte menneisyyteen estämään Illuminatin hirmuvaltaa."
+            self.msg_que.append((None, "Saitte aikakoneen valmiiksi "
+                                       "ja pakenitte menneisyyteen estämään Illuminatin hirmuvaltaa."))
         else:
             self.save_file()
-            return None
+            self.msg_que.append((None, None))
 
     def illumi_stats(self, p):
         def format_time(time):
@@ -402,32 +407,32 @@ class manager:
                                                x["potency"])
                 txt += "Juonen voi tuhota lähettämällä 1000 shekeliä /illuminati x (x = slot)."
 
-            return txt
+            self.msg_que.append((p["id"], txt))
         else:
             try:
                 if self.brewers[p["name"]].money < 1000:
                     print("money")
-                    return "Sinulla ei ole tarpeeksi rahaa juonen tuhoamiseen."
+                    self.msg_que.append((p["id"], "Sinulla ei ole tarpeeksi rahaa juonen tuhoamiseen."))
                 else:
                     slot = int(p["args"][0]) - 1
                     self.illuminati.active_events.pop(slot)
                     self.illumi_update_event_minus()
                     self.brewers[p["name"]].money -= 1000
                     self.save_file()
-                    return "Ilkeä juoni tuhottu."
+                    self.msg_que.append((p["id"], "Ilkeä juoni tuhottu."))
             except:
-                return "Slot error"
+                self.msg_que.append((p["id"], "Slot error"))
 
     def illumi_shop(self, p):
         name, args = p["name"], p["args"]
         if len(args) is 0:
-            return self.illuminati.shop_view()
+            self.msg_que.append((p["id"],  self.illuminati.shop_view()))
         else:
             try:
                 slot = int(args[0]) - 1
                 new_item = self.illuminati.shop_buy(slot, self.brewers[name].money)
                 if not new_item[0]:
-                    return new_item[1]
+                    self.msg_que.append((p["id"], new_item[1]))
                 else:
                     new_item = new_item[1]
                     if new_item[0] == "item":
@@ -437,51 +442,52 @@ class manager:
                         self.brewers[name].money -= new_item[1]
                         self.brewers[name].item_affix_add()
                         self.save_file()
-                        return "Esine ostettu."
+                        self.msg_que.append((p["id"], "Esine ostettu."))
                     elif new_item[0] == "cons":
                         if len(self.brewers[name].inventory.consumables) == 4:
                             self.brewers[name].inventory.consumables.pop(3)
                         self.brewers[name].inventory.consumables.append(new_item[2])
                         self.brewers[name].money -= new_item[1]
                         self.save_file()
-                        return "Esine ostettu."
+                        self.msg_que.append((p["id"], "Esine ostettu."))
                     elif new_item[0] == "aikakone":
                         self.brewers[name].money -= new_item[1]
                         self.save_file()
-                        return "Nopeutit aikakoneen valmistumista %s tunnilla." % new_item[2]
+                        self.msg_que.append((p["id"], "Nopeutit aikakoneen valmistumista %s tunnilla." % new_item[2]))
 
             except:
-                return "Invaliidi slotti."
+                self.msg_que.append((p["id"], "Invaliidi slotti."))
 
     def give_money(self, p):
         name, to = p["name"], p["args"][0]
         try:
             amount = int(p["args"][1])
         except:
-            return "Invaliidi value"
+            self.msg_que.append((p["id"], "Invaliidi value"))
+            return
 
         if amount > self.brewers[name].money:
-            return "Sinulla ei ole tarpeeksi rahaa."
+            self.msg_que.append((p["id"], "Sinulla ei ole tarpeeksi rahaa."))
         else:
             self.brewers[name].money -= amount
             self.brewers[to].money += amount
             self.save_file()
-            return "%s siirretty %s tilille." % (amount, to)
+            self.msg_que.append((p["id"], "%s siirretty %s tilille." % (amount, to)))
 
     def brew_notify(self, p):
         name = p["name"]
         if self.brewers[name].notify_reply:
             self.brewers[name].notify_reply = False
-            return "Kahvisi ei enää piippaa."
+            self.msg_que.append((p["id"], "Kahvisi ei enää piippaa."))
         else:
             self.brewers[name].notify_reply = True
-            return "Kahvisi piippaa kun se on valmista."
+            self.msg_que.append((p["id"], "Kahvisi piippaa kun se on valmista."))
 
     def brew_cancel(self, p):
         name = p["name"]
         for b_name in self.brew_que.keys():
             if name == b_name:
                 del self.brew_que[b_name]
-                return "Kaadoit kahvisi viemäriin"
-        return "Et keitä tällä hetkellä kahvia."
+                self.msg_que.append((p["id"], "Kaadoit kahvisi viemäriin"))
+        self.msg_que.append((p["id"], "Et keitä tällä hetkellä kahvia."))
 

@@ -7,7 +7,7 @@ from manager import manager
 from datetime import datetime
 from mods import logger_sys as log
 from time import sleep
-id_test = -116368010
+id_channel = -116368010
 id_priva = 84340477
 man = manager()
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
@@ -25,10 +25,8 @@ def get_print_time():
 
 def brew(bot,update,args):
     p = packet(update,args)
-    r = man.queue_coffee(p)
+    man.queue_coffee(p)
     print("%s - Brew %s" % (get_print_time(), p["name"]))
-    bot.sendMessage(p["id"], r)
-    log.log_command("Brew", p["name"], args)
 
 def brew_timer(bot):
     r = man.brew_timer()
@@ -41,41 +39,31 @@ def brew_timer(bot):
 def brew_score(bot,update,args):
     p = packet(update,args)
     print("%s - Brew score %s" % (get_print_time(), p["name"]))
-    log.log_command("Brew Score", p["name"], args)
-    bot.sendMessage(p["id"],man.brew_score(p["name"]), parse_mode=telegram.ParseMode.MARKDOWN)
+    man.brew_score(p)
 
 def brew_stats(bot,update,args):
     p = packet(update, args)
     print("%s - Brew Stats %s" % (get_print_time(), p["name"]))
-    log.log_command("Brew Stats", p["name"], args)
-    bot.sendMessage(p["id"], man.brew_stats(p), parse_mode=telegram.ParseMode.MARKDOWN)
+    man.brew_stats(p)
 
 def brew_check(bot, update, args):
     p = packet(update,args)
-    r = man.brew_check(p)
-    log.log_command("Brew Check", p["name"], args)
-    bot.sendMessage(p["id"], r)
+    man.brew_check(p)
 
 def brew_inventory(bot, update, args):
     p = packet(update,args)
     print("%s - Brew Inv %s" % (get_print_time(), p["name"]))
-    log.log_command("Brew Inv", p["name"], args)
-    r = man.brew_inventory(p)
-    bot.sendMessage(p["id"], r, parse_mode=telegram.ParseMode.MARKDOWN)
+    man.brew_inventory(p)
 
 def brew_remove(bot, update, args):
     p = packet(update,args)
-    r = man.item_remove(p)
+    man.item_remove(p)
     print("%s - Brew item remove %s" % (get_print_time(), p["name"]))
-    log.log_command("Brew item remove", p["name"], args)
-    bot.sendMessage(p["id"], r)
 
 def brew_cons(bot, update, args):
     p = packet(update, args)
-    r = man.cons_use(p)
+    man.cons_use(p)
     print("%s - Cons use %s" % (get_print_time(), p["name"]))
-    log.log_command("Brew cons use", p["name"], args)
-    bot.sendMessage(p["id"], r)
 
 def brew_help(bot, update, args):
     p = packet(update, args)
@@ -86,9 +74,7 @@ def brew_help(bot, update, args):
            "/illumi_shop\n" \
            "/give_money -name- -amount-"
     print("%s - Brew Help %s" % (get_print_time(), p["name"]))
-    log.log_command("Brew Help", p["name"], args)
     bot.sendMessage(p["id"], text)
-    print(p["id"])
 
 def brew_status(bot, update, args):
     p = packet(update, args)
@@ -102,31 +88,21 @@ def rahka(bot, update, args):
 
 def illuminati(bot, update, args):
     p = packet(update, args)
-    r = man.illumi_stats(p)
+    man.illumi_stats(p)
     print("%s - Illumi stats %s" % (get_print_time(), p["name"]))
-    log.log_command("Illuminati Stats", p["name"], args)
-    bot.sendMessage(p["id"], r, parse_mode=telegram.ParseMode.MARKDOWN)
 
 def illumi_shop(bot, update, args):
     p = packet(update, args)
-    r = man.illumi_shop(p)
+    man.illumi_shop(p)
     print("%s - Brew Stats %s" % (get_print_time(), p["name"]))
-    log.log_command("Illuminati Store", p["name"], args)
-    bot.sendMessage(p["id"], r, parse_mode=telegram.ParseMode.MARKDOWN)
 
 def error(bot, update, error):
     logger.warn('Update "%s" caused error "%s"' % (update, error))
 
-def illumi_time(bot):
-    re = man.illumi_time_check()
-    if re is not None:
-        bot.sendMessage(id_test, re)
-
 def give_money(bot, update, args):
     p = packet(update, args)
     print("%s - Brew Stats %s" % (get_print_time(), p["name"]))
-    log.log_command("Give Money", p["name"], args)
-    bot.sendMessage(p["id"], man.give_money(p))
+    man.give_money(p)
 
 def terasta(bot, update, args):
     p = packet(update, args)
@@ -134,19 +110,23 @@ def terasta(bot, update, args):
 
 def brew_notify(bot, update, args):
     p = packet(update, args)
-    bot.sendMessage(p["id"], man.brew_notify(p))
+    man.brew_notify(p)
 
 def brew_cancel(bot, update, args):
     p = packet(update, args)
-    bot.sendMessage(p["id"],man.brew_cancel(p))
+    man.brew_cancel(p)
 
 def msg_que(bot):
+    man.illumi_time_check()
     if len(man.msg_que) != 0:
         for x in man.msg_que:
-            bot.sendMessage(id_test, x)
+            id, msg = x[0], x[1]
+            if msg is not None:
+                if id is not None:
+                    bot.sendMessage(id, msg, parse_mode=telegram.ParseMode.MARKDOWN)
+                else:
+                    bot.sendMessage(id_channel, msg, parse_mode=telegram.ParseMode.MARKDOWN)
         man.msg_que = []
-
-
 
 def main():
     updater = Updater(man.settings["authkey"]) #brew bot
@@ -154,9 +134,8 @@ def main():
     dp = updater.dispatcher
     j_que = updater.job_queue
     j_que.put(brew_timer, 1)
-    j_que.put(illumi_time, 2)
-    j_que.put(msg_que, 10)
-    print("Brew 0.8 + Items&Drops DLC + ILLUMICOFFEE")
+    j_que.put(msg_que, 2)
+    print("Brew 0.80 + Items&Drops DLC 2.0 + ILLUMICOFFEE")
 
     dp.addTelegramCommandHandler("brew", brew)
     dp.addTelegramCommandHandler("brew_stats", brew_stats)

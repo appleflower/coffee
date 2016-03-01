@@ -12,6 +12,13 @@ class arpa():
         date = datetime.date.today()
         self.end_time = datetime.datetime(year=date.year, month=date.month, day=date.day, hour=23, minute=59)
 
+    def player_add(self, name):
+        if name in self.players:
+            return False
+        else:
+            self.players.append(name)
+            return True
+
     def prize_pool_create(self):
         def get_from_type(whatuwant):
             i = item.item().create_item()
@@ -28,7 +35,27 @@ class arpa():
         return r
 
     def allocate_prizes(self):
-        pass
+        def get_text_and_max_prize():
+            p_count = len(self.players)
+            prize_text = None
+            max_prize = None
+            if p_count == 0:
+                prize_text = "Kukaan ei ostanut arpaa päivän arpajaisiin."
+            elif p_count == 1:
+                prize_text = "Vain %s uhrautui ostamaan arvan, eikä arpajaisia pidetty loppuun." % self.players[0]
+            elif p_count == 2:
+                max_prize = "Common"
+            elif p_count == 3:
+                max_prize = "Rare"
+            elif p_count == 4:
+                max_prize = "Epic"
+            elif p_count > 4:
+                max_prize = "Celestial"
+
+            return max_prize, prize_text
+
+        max_prize, prize_text = get_text_and_max_prize()
+
 
     def check_time(self):
         if datetime.datetime.now() > self.end_time:
@@ -163,3 +190,6 @@ class illuminati():
         except:
             return False, "Error getting item"
 
+#d = illuminati()
+#d.item = item.item()
+#d.save_file("illuminati.p",d)

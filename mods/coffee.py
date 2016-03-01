@@ -27,6 +27,13 @@ class coffee():
         self.test = None
 
 
+    def new_inv(self):
+        i_old = self.inventory.items
+        c_old = self.inventory.consumables
+        self.inventory = item.item()
+        self.inventory.items = i_old
+        self.inventory.consumables = c_old
+
     def human_number(self, number):
         if number < 1000:
             return number
