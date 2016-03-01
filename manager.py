@@ -10,39 +10,30 @@ from math import sqrt
 
 class manager:
     def __init__(self):
-        self.best_coffee = 0
+        def load_file(path, json_bool):
+            if not json_bool:
+                try:
+                    with open(path, "rb") as f:
+                        return pickle.load(f)
+                except:
+                    print("Error loading " + path)
+                    return {}
+            else:
+                try:
+                    with open(path, "r") as f:
+                        return json.load(f)
+                except ValueError:
+                    print("Error loading settings")
+                    return {}
+
         self.msg_que = []
+        self.brewers = load_file("mods/brewers2.p", False)
+        self.brew_que = load_file("mods/brew_que.p", False)
+        self.illuminati = load_file("mods/illuminati.p", False)
+        self.settings = load_file("settings.json", True)
 
         try:
-            with open("settings.json", "r") as f:
-                self.settings = json.load(f)
-        except ValueError:
-            self.settings = {}
-            print("Error loading settings")
-
-        try:
-            with open("mods/brewers2.p", "rb") as f:
-                self.brewers = pickle.load(f)
-        except:
-            print("Error loading brewers.p")
-            self.brewers = {}
-
-        try:
-            with open("mods/brew_que.p", "rb") as f:
-                self.brew_que = pickle.load(f)
-        except:
-            print("Error loading brew_que.p")
-            self.brew_que = {}
-
-        try:
-            with open("mods/illuminati.p", "rb") as f:
-                self.illuminati = pickle.load(f)
-        except:
-            print("Error loading illuminati.p")
-            self.illuminati = illumicoffee.illuminati()
-
-        top_brews = []
-        try:
+            top_brews = []
             for x in self.brewers:
                 top_brews.append(self.brewers[x].best_coffee)
             self.top_brew = max(top_brews)
@@ -226,51 +217,65 @@ class manager:
                 self.msg_que.append((p["id"],  "Edellinen kahvisi on valmista %s:%s" % (done_h, done_m)))
 
     def brew_inventory(self, p):
-        self.msg_que.append((p["id"], self.brewers[p["name"]].inventory_view()))
+        arg, id, name = p["args"], p["id"], p["name"]
 
-    def item_remove(self, p):
-        try:
-            slot = int(p["args"][0]) - 1
-        except ValueError:
-            self.msg_que.append((p["id"], "Error: not int."))
-            return
-        if slot > 3:
-            self.msg_que.append((p["id"],  "Error: index over 4."))
-            return
+        if len(arg) == 0:
+            self.msg_que.append((id, self.brewers[name].inventory_view()))
+        else:
+            try:
+                slot = int(arg[0]) - 1
+            except ValueError:
+                self.msg_que.append((id, "Error: not int."))
+                return
+            if slot > 3:
+                self.msg_que.append((id,  "Error: index over 4."))
+                return
 
-        if p["name"] in self.brewers.keys():
-            if len(self.brewers[p["name"]].inventory.items) is not 0:
-                try:
-                    r = self.brewers[p["name"]].item_remove(slot)
-                except IndexError:
-                    r = "Error: no item in slot"
+            if name in self.brewers.keys():
+                if len(self.brewers[name].inventory.items) is not 0:
+                    try:
+                        r = self.brewers[name].item_remove(slot)
+                    except IndexError:
+                        r = "Error: no item in slot"
 
-                self.save_file()
-                self.msg_que.append((p["id"],  r))
-            else:
-                self.msg_que.append((p["id"],  "Sinulla ei ole itemeitä."))
+                    self.save_file()
+                    self.msg_que.append((id,  r))
+                else:
+                    self.msg_que.append((id,  "Sinulla ei ole itemeitä."))
 
     def cons_use(self, p):
-        try:
-            slot = int(p["args"][0]) - 1
-        except ValueError:
-            self.msg_que.append((p["id"], "Error: not int."))
-            return
-        if slot > 3:
-            self.msg_que.append((p["id"], "Error: index over 4."))
-            return
+        arg, name, id = p["args"][0], p["name"], p["id"]
 
-        if p["name"] in self.brewers.keys():
-            if len(self.brewers[p["name"]].inventory.consumables) is not 0:
-                try:
-                    r = self.brewers[p["name"]].cons_use(slot)
-                except IndexError:
-                    r = "Error: no consumable in slot"
+        if arg == "all":
+            if name in self.brewers.keys():
+                if len(self.brewers[name].inventory.consumables) is not 0:
+                    for i in range(0, len(self.brewers[name].inventory.consumables)):
+                        r = self.brewers[name].cons_use(0)
+                        self.msg_que.append((id, r))
+                    self.save_file()
+                else:
+                    self.msg_que.append((id, "Sinulla ei ole itemeitä."))
+        else:
+            try:
+                slot = int(arg) - 1
+            except ValueError:
+                self.msg_que.append((id, "Error: not int."))
+                return
+            if slot > 3:
+                self.msg_que.append((id, "Error: index over 4."))
+                return
 
-                self.save_file()
-                self.msg_que.append((p["id"], r))
-            else:
-                self.msg_que.append((p["id"], "Sinulla ei ole itemeitä."))
+            if name in self.brewers.keys():
+                if len(self.brewers[name].inventory.consumables) is not 0:
+                    try:
+                        r = self.brewers[name].cons_use(slot)
+                    except IndexError:
+                        r = "Error: no consumable in slot"
+
+                    self.save_file()
+                    self.msg_que.append((id, r))
+                else:
+                    self.msg_que.append((id, "Sinulla ei ole itemeitä."))
 
     def brew_status(self):
         avgs = []
@@ -424,39 +429,47 @@ class manager:
                 self.msg_que.append((p["id"], "Slot error"))
 
     def illumi_shop(self, p):
-        name, args = p["name"], p["args"]
+        name, args, id = p["name"], p["args"], p["id"]
         if len(args) is 0:
             self.msg_que.append((p["id"],  self.illuminati.shop_view()))
         else:
-            try:
-                slot = int(args[0]) - 1
-                new_item = self.illuminati.shop_buy(slot, self.brewers[name].money)
-                if not new_item[0]:
-                    self.msg_que.append((p["id"], new_item[1]))
+            if args[0] == "reset":
+                if self.brewers[name].money < 500:
+                    self.msg_que.append((id, "Sinulla ei ole tarpeeksi rahaa"))
                 else:
-                    new_item = new_item[1]
-                    if new_item[0] == "item":
-                        if len(self.brewers[name].inventory.items) == 4:
-                            self.brewers[name].inventory.items.pop(3)
-                        self.brewers[name].inventory.items.append(new_item[2])
-                        self.brewers[name].money -= new_item[1]
-                        self.brewers[name].item_affix_add()
-                        self.save_file()
-                        self.msg_que.append((p["id"], "Esine ostettu."))
-                    elif new_item[0] == "cons":
-                        if len(self.brewers[name].inventory.consumables) == 4:
-                            self.brewers[name].inventory.consumables.pop(3)
-                        self.brewers[name].inventory.consumables.append(new_item[2])
-                        self.brewers[name].money -= new_item[1]
-                        self.save_file()
-                        self.msg_que.append((p["id"], "Esine ostettu."))
-                    elif new_item[0] == "aikakone":
-                        self.brewers[name].money -= new_item[1]
-                        self.save_file()
-                        self.msg_que.append((p["id"], "Nopeutit aikakoneen valmistumista %s tunnilla." % new_item[2]))
+                    self.brewers[name].money -= 500
+                    self.illuminati.shop = self.illuminati.shop_new()
+                    self.msg_que.append((id, "Resetoit kaupan!!"))
+            else:
+                try:
+                    slot = int(args[0]) - 1
+                    new_item = self.illuminati.shop_buy(slot, self.brewers[name].money)
+                    if not new_item[0]:
+                        self.msg_que.append((p["id"], new_item[1]))
+                    else:
+                        new_item = new_item[1]
+                        if new_item[0] == "item":
+                            if len(self.brewers[name].inventory.items) == 4:
+                                self.brewers[name].inventory.items.pop(3)
+                            self.brewers[name].inventory.items.append(new_item[2])
+                            self.brewers[name].money -= new_item[1]
+                            self.brewers[name].item_affix_add()
+                            self.save_file()
+                            self.msg_que.append((p["id"], "Esine ostettu."))
+                        elif new_item[0] == "cons":
+                            if len(self.brewers[name].inventory.consumables) == 4:
+                                self.brewers[name].inventory.consumables.pop(3)
+                            self.brewers[name].inventory.consumables.append(new_item[2])
+                            self.brewers[name].money -= new_item[1]
+                            self.save_file()
+                            self.msg_que.append((p["id"], "Esine ostettu."))
+                        elif new_item[0] == "aikakone":
+                            self.brewers[name].money -= new_item[1]
+                            self.save_file()
+                            self.msg_que.append((p["id"], "Nopeutit aikakoneen valmistumista %s tunnilla." % new_item[2]))
 
-            except:
-                self.msg_que.append((p["id"], "Invaliidi slotti."))
+                except:
+                    self.msg_que.append((p["id"], "Invaliidi slotti."))
 
     def give_money(self, p):
         name, to = p["name"], p["args"][0]
@@ -490,4 +503,3 @@ class manager:
                 del self.brew_que[b_name]
                 self.msg_que.append((p["id"], "Kaadoit kahvisi viemäriin"))
         self.msg_que.append((p["id"], "Et keitä tällä hetkellä kahvia."))
-

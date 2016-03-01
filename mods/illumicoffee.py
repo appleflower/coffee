@@ -77,7 +77,6 @@ class illuminati():
     def save_file(self,filename,file):
         with open(filename,"wb") as outfile: pickle.dump(file,outfile)
 
-    ##active_events[x][2] = {attrb, desc, potency}
     def events_creator(self):
         now = datetime.datetime.now()
         def event_create(potency, days, hour_max):
@@ -89,7 +88,7 @@ class illuminati():
             time = now + datetime.timedelta(days=days) + datetime.timedelta(hours=randint(1, hour_max))
 
             return [False, time, event]
-        lst = [event_create(5, 2, 12), event_create(10, 5, 10), event_create(15, 7, 12)]
+        lst = [event_create(20, 2, 12), event_create(40, 5, 10), event_create(60, 7, 12)]
         return lst
 
     def time_check(self, event_check):
@@ -166,7 +165,8 @@ class illuminati():
                 print("shop view error")
 
         txt += "\nOsta kaupasta laittamalla komennon perään haluttu numero. Jos esineelle ei ole tilaa, poistetaan" \
-               " *viimeinen* esine inventoorista."
+               " *viimeinen* esine inventoorista.\n" \
+               "Päivitä kauppa laittamalla komennon perään reset, hinta 500 shekeliä."
         return txt
 
     def shop_buy(self, slot, current_money):

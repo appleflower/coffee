@@ -55,11 +55,6 @@ def brew_inventory(bot, update, args):
     print("%s - Brew Inv %s" % (get_print_time(), p["name"]))
     man.brew_inventory(p)
 
-def brew_remove(bot, update, args):
-    p = packet(update,args)
-    man.item_remove(p)
-    print("%s - Brew item remove %s" % (get_print_time(), p["name"]))
-
 def brew_cons(bot, update, args):
     p = packet(update, args)
     man.cons_use(p)
@@ -142,7 +137,6 @@ def main():
     dp.addTelegramCommandHandler("brew_score", brew_score)
     dp.addTelegramCommandHandler("brew_check", brew_check)
     dp.addTelegramCommandHandler("brew_inventory", brew_inventory)
-    dp.addTelegramCommandHandler("brew_remove", brew_remove)
     dp.addTelegramCommandHandler("brew_cons", brew_cons)
     dp.addTelegramCommandHandler("brew_help", brew_help)
     dp.addTelegramCommandHandler("brew_status", brew_status)
