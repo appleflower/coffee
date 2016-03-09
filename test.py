@@ -9,7 +9,7 @@ def save_file(filename,file):
 #save_file("mods/brew_que.p", d)
 
 
-with open("mods/brewers2.p","rb") as f:
+with open("mods/brewers.p","rb") as f:
     try:
         d = pickle.load(f)
     except FileNotFoundError:
@@ -17,10 +17,10 @@ with open("mods/brewers2.p","rb") as f:
         d = {}
 
 for x in d:
-    print(d[x].notify_reply)
+    print(d[x].active_cons_boost["crit"])
 
 
-#save_file("mods/brewers2.p", d)
+#save_file("mods/brewers.p", d)
 
 
 

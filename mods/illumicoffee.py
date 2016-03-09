@@ -3,63 +3,52 @@ import mods.item as item
 from random import randint, choice
 from mods import logger_sys as log
 
-class arpa():
+class supply_drop():
     def __init__(self):
-        self.all_players = []
-        self.players = []
-        self.prizes = self.prize_pool_create()
-        self.cost = 1000
-        date = datetime.date.today()
-        self.end_time = datetime.datetime(year=date.year, month=date.month, day=date.day, hour=23, minute=59)
+        self.box = self.drop_create()
+        self.dropped = False
 
-    def player_add(self, name):
-        if name in self.players:
-            return False
+    def drop_give(self):
+        if len(self.box) is not 0:
+            r_index = randint(0, len(self.box))
+            r = self.box[r_index]
+            self.box.pop(r_index)
+            return r
         else:
-            self.players.append(name)
-            return True
+            return None
 
-    def prize_pool_create(self):
+
+    def drop_create(self):
         def get_from_type(whatuwant):
             i = item.item().create_item()
             while i["type"] is not whatuwant:
                 i = item.item().create_item()
             return i
 
-        r = [
-            get_from_type("Common"),
-            get_from_type("Rare"),
-            get_from_type("Epic"),
-            get_from_type("Celestial")
-        ]
-        return r
+        def drop_cons(grade):
+            c = item.item().cons_drop()
+            c = c[1]
+            while c["grade"] is not grade:
+                c = item.item().cons_drop()
+                c = c[1]
+            return c
 
-    def allocate_prizes(self):
-        def get_text_and_max_prize():
-            p_count = len(self.players)
-            prize_text = None
-            max_prize = None
-            if p_count == 0:
-                prize_text = "Kukaan ei ostanut arpaa päivän arpajaisiin."
-            elif p_count == 1:
-                prize_text = "Vain %s uhrautui ostamaan arvan, eikä arpajaisia pidetty loppuun." % self.players[0]
-            elif p_count == 2:
-                max_prize = "Common"
-            elif p_count == 3:
-                max_prize = "Rare"
-            elif p_count == 4:
-                max_prize = "Epic"
-            elif p_count > 4:
-                max_prize = "Celestial"
+        box = []
+        if randint(0, 9) == 0:
+            box.append(get_from_type("Celestial"))
+        else:
+            box.append(get_from_type("Epic"))
 
-            return max_prize, prize_text
+        if randint(0, 1) == 0:
+            box.append(get_from_type("Epic"))
+        else:
+            box.append(get_from_type("Rare"))
 
-        max_prize, prize_text = get_text_and_max_prize()
+        box.append(drop_cons(10))
+        box.append(drop_cons(10))
+        box.append(drop_cons(10))
 
-
-    def check_time(self):
-        if datetime.datetime.now() > self.end_time:
-            self.allocate_prizes()
+        return box
 
 class illuminati():
     def __init__(self):

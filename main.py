@@ -111,6 +111,10 @@ def brew_cancel(bot, update, args):
     p = packet(update, args)
     man.brew_cancel(p)
 
+def forward_checker(bot, update):
+    msg = update.message.reply_to_message
+    print(msg)
+
 def msg_que(bot):
     man.illumi_time_check()
     if len(man.msg_que) != 0:
@@ -147,6 +151,7 @@ def main():
     dp.addTelegramCommandHandler("terästä", terasta)
     dp.addTelegramCommandHandler("brew_notify", brew_notify)
     dp.addTelegramCommandHandler("brew_cancel", brew_cancel)
+    #dp.addTelegramMessageHandler(forward_checker)
 
     dp.addErrorHandler(error)
     update_queue = updater.start_polling(poll_interval=2, timeout=10)

@@ -30,8 +30,12 @@ class item:
         self.items.pop(slot)
 
     def cons_drop(self):
-        cons_names = {"score": "Pyhä Vesi", "exp": "Ihmekuppi", "grade": "Kahvikirja", "drop": "Kahvikauppias"}
-        drop_type = ["exp", "score", "grade", "drop"]
+        cons_names = {"score": "Pyhä Vesi",
+                      "exp": "Ihmekuppi",
+                      "grade": "Kahvikirja",
+                      "drop": "Kahvikauppias",
+                      "crit": "Turbokuppi"}
+        drop_type = ["exp", "score", "grade", "drop", "crit"]
         dropped = choice(drop_type)
 
         if len(self.consumables) < 4:
@@ -50,6 +54,8 @@ class item:
             return ceil(grade / 2)
         elif c_type == "drop":
             return grade * 10
+        elif c_type == "crit":
+            return grade * 2
 
     def get_random_by_prob(self, items):
         total = sum(int(item.get("prob")) for item in items)
@@ -95,7 +101,11 @@ class item:
             re_txt = ", ".join(['%s: %s' % (key.capitalize(), value) for (key, value) in affixes.items()])
             return re_txt
         def get_cons_bonuses():
-            cons_names = {"score": "Pyhä Vesi", "exp": "Ihmekuppi", "grade": "Kahvikirja", "drop": "Kahvikauppias"}
+            cons_names = {"score": "Pyhä Vesi",
+                          "exp": "Ihmekuppi",
+                          "grade": "Kahvikirja",
+                          "drop": "Kahvikauppias",
+                          "crit": "Turbokuppi"}
             re_txt = ""
             for x in self.consumables:
                 re_txt += "{0}, Grade: {1}\n".format(cons_names[x["type"]], x["grade"])

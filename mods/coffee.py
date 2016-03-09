@@ -19,12 +19,12 @@ class coffee():
         self.last_brew = None
         self.inventory = item.item()
         self.active_boost, self.active_cons_boost = \
-            {"score": 0, "exp": 0, "grade": 0, "drop": 0}, {"score": 0, "exp": 0, "grade": 0, "drop": 0}
+            {"score": 0, "exp": 0, "grade": 0, "drop": 0}, \
+            {"score": 0, "exp": 0, "grade": 0, "drop": 0, "crit": 0}
         self.event_minus = {"score": 0, "exp": 0, "grade": 0, "drop": 0}
         self.prestige_bonus = 0
         self.money = 0
         self.notify_reply = False
-        self.test = None
 
 
     def new_inv(self):
@@ -99,7 +99,7 @@ class coffee():
 
             return return_score, minus
 
-        def get_grade(score, timer, minus):
+        def get_grade(score, timer, minus, coffee_crit):
 
             def get_text(grade):
                 grade += 1
@@ -124,7 +124,7 @@ class coffee():
 
                 #item code money
                 if minus_score > 40:
-                    money = randint(0, 50) * grade
+                    money = randint(30, 50) * grade
                     money *= ceil(item_bonus["drop"] + cons_bonus["drop"]) / 100 + 1
                     money *= self.prestige_bonus / 100 + 1
                     money *= 1 - (self.event_minus["drop"] / 100)
@@ -164,6 +164,9 @@ class coffee():
                 if lvl_up:
                     txt += "\n`[LVLUP]` *+{0} {1}*".format(gained_lvls, ("lvl" if gained_lvls == 1 else "lvls"))
 
+                if coffee_crit:
+                    txt += "\n`[CRIT]` *DING DING*"
+
                 #item code drop
                 if minus_score > 40:
                     bonus_drop_c = ceil(item_bonus["drop"] + cons_bonus["drop"]) / 100 + 1
@@ -195,7 +198,6 @@ class coffee():
             if randint(0, 100) < grade_bonus:
                 grade += 1
             if grade > 4: grade = 4
-
 
             return get_text(grade)
 
@@ -288,6 +290,12 @@ class coffee():
         score *= self.prestige_bonus / 100 + 1
         score *= 1 - (self.event_minus["score"] / 100)
 
+        coffee_crit = False
+        if cons_bonus["crit"] != 0:
+            if randint(0, 100) < cons_bonus["crit"]:
+                coffee_crit = True
+                score *= 1.5
+
         score, minus = get_minus_score(score)
         score = round(score)
 
@@ -295,10 +303,10 @@ class coffee():
         if score > self.best_coffee:
             self.best_coffee = score
 
-        self.active_cons_boost = {"score": 0, "exp": 0, "grade": 0, "drop": 0}
+        self.active_cons_boost = {"score": 0, "exp": 0, "grade": 0, "drop": 0, "crit": 0}
 
         log.log_brew(self.name, time, score, self.lvl)
-        return score, get_grade(score, time, minus)
+        return score, get_grade(score, time, minus, coffee_crit)
 
     def lvl_up(self):
         self.lvl += 1

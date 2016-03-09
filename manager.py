@@ -27,7 +27,7 @@ class manager:
                     return {}
 
         self.msg_que = []
-        self.brewers = load_file("mods/brewers2.p", False)
+        self.brewers = load_file("mods/brewers.p", False)
         self.brew_que = load_file("mods/brew_que.p", False)
         self.illuminati = load_file("mods/illuminati.p", False)
         self.settings = load_file("settings.json", True)
@@ -61,6 +61,7 @@ class manager:
              "mods/illuminati.p": self.illuminati}
         for path, obj in d.items():
             with open(path, "wb") as outfile: pickle.dump(obj, outfile)
+
 
     def brew_score(self, p):
         top_score = []
@@ -153,7 +154,7 @@ class manager:
                 time_evening = datetime.time(hour= 22, minute= 0)
 
                 if now > time_evening or now < time_morning:
-                    self.msg_que.append("HYVÄÄ YÖTÄ %s" % p["name"].upper())
+                    self.msg_que.append((None, "HYVÄÄ YÖTÄ %s" % p["name"].upper()))
 
             if timer <= 60:
                 self.msg_que.append((p["id"], "Kahvisi on valmista %s minuutissa" % timer))
@@ -503,3 +504,4 @@ class manager:
                 del self.brew_que[b_name]
                 self.msg_que.append((p["id"], "Kaadoit kahvisi viemäriin"))
         self.msg_que.append((p["id"], "Et keitä tällä hetkellä kahvia."))
+
