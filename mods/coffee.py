@@ -6,6 +6,7 @@ from math import ceil
 import humanize
 from mods import item
 from mods import logger_sys as log
+from mods.farm import farm
 
 class coffee():
     def __init__(self, name):
@@ -25,6 +26,7 @@ class coffee():
         self.prestige_bonus = 0
         self.money = 0
         self.notify_reply = False
+        self.farm = farm.beanfarm("Kukkakaali")
 
 
     def new_inv(self):
@@ -168,7 +170,7 @@ class coffee():
                     txt += "\n`[CRIT]` *DING DING*"
 
                 #item code drop
-                if minus_score > 40:
+                if minus_score > 50:
                     bonus_drop_c = ceil(item_bonus["drop"] + cons_bonus["drop"]) / 100 + 1
                     bonus_drop_c *= 1 - (self.event_minus["drop"] / 100)
                     self.drop_chance *= bonus_drop_c
@@ -389,3 +391,8 @@ class coffee():
     def inventory_view(self):
         return self.inventory.get_inv_txt()
 
+    def farm_stats(self, pic):
+        if not pic:
+            return self.farm.farm_print(False)
+        else:
+            return self.farm.farm_print(True)

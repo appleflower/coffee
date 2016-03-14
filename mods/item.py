@@ -45,6 +45,7 @@ class item:
         else:
             return False, None
 
+
     def get_cons_bonus(self, c_type, grade):
         if c_type == "exp":
             return grade * 2

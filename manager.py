@@ -7,7 +7,7 @@ from mods import coffee
 from operator import attrgetter
 from mods import illumicoffee
 from math import sqrt
-
+from mods.farm import farm
 class manager:
     def __init__(self):
         def load_file(path, json_bool):
@@ -27,7 +27,7 @@ class manager:
                     return {}
 
         self.msg_que = []
-        self.brewers = load_file("mods/brewers.p", False)
+        self.brewers = load_file("mods/brewers2.p", False)
         self.brew_que = load_file("mods/brew_que.p", False)
         self.illuminati = load_file("mods/illuminati.p", False)
         self.settings = load_file("settings.json", True)
@@ -61,7 +61,6 @@ class manager:
              "mods/illuminati.p": self.illuminati}
         for path, obj in d.items():
             with open(path, "wb") as outfile: pickle.dump(obj, outfile)
-
 
     def brew_score(self, p):
         top_score = []
@@ -504,4 +503,18 @@ class manager:
                 del self.brew_que[b_name]
                 self.msg_que.append((p["id"], "Kaadoit kahvisi viemäriin"))
         self.msg_que.append((p["id"], "Et keitä tällä hetkellä kahvia."))
+
+    def farm_workers_update(self):
+        for name, obj in self.brewers.items():
+            assert isinstance(obj, coffee.coffee)
+            obj.farm.update_worker()
+
+    def farm_stats(self, p):
+        name = p["name"]
+        if len(p["args"]) == 0:
+            return self.brewers[name].farm_stats(False)
+        else:
+            if p["args"][0] == "pic":
+                return self.brewers[name].farm_stats(True)
+
 

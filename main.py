@@ -111,9 +111,13 @@ def brew_cancel(bot, update, args):
     p = packet(update, args)
     man.brew_cancel(p)
 
-def forward_checker(bot, update):
-    msg = update.message.reply_to_message
-    print(msg)
+def farm_update(bot):
+    man.farm_workers_update()
+
+def farm_stats(bot, update, args):
+    p = packet(update, args)
+    r = man.farm_stats(p)
+    bot.sendMessage(p["id"], r)
 
 def msg_que(bot):
     man.illumi_time_check()
@@ -134,6 +138,7 @@ def main():
     j_que = updater.job_queue
     j_que.put(brew_timer, 1)
     j_que.put(msg_que, 2)
+    j_que.put(farm_update, 30)
     print("Brew 0.80 + Items&Drops DLC 2.0 + ILLUMICOFFEE")
 
     dp.addTelegramCommandHandler("brew", brew)
@@ -151,6 +156,7 @@ def main():
     dp.addTelegramCommandHandler("terästä", terasta)
     dp.addTelegramCommandHandler("brew_notify", brew_notify)
     dp.addTelegramCommandHandler("brew_cancel", brew_cancel)
+    dp.addTelegramCommandHandler("farm_stats", farm_stats)
     #dp.addTelegramMessageHandler(forward_checker)
 
     dp.addErrorHandler(error)
@@ -173,3 +179,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+#kakkapkäle
