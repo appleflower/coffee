@@ -498,11 +498,12 @@ class manager:
 
     def brew_cancel(self, p):
         name = p["name"]
+        del_name = ""
         for b_name in self.brew_que.keys():
             if name == b_name:
-                del self.brew_que[b_name]
+                del_name = b_name
                 self.msg_que.append((p["id"], "Kaadoit kahvisi viemäriin"))
-        self.msg_que.append((p["id"], "Et keitä tällä hetkellä kahvia."))
+        del self.brew_que[del_name]
 
     def farm_workers_update(self):
         for name, obj in self.brewers.items():

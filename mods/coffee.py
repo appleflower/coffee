@@ -7,6 +7,7 @@ import humanize
 from mods import item
 from mods import logger_sys as log
 from mods.farm import farm
+import json
 
 class coffee():
     def __init__(self, name):
@@ -75,8 +76,46 @@ class coffee():
         return txt
 
     def brew2(self, time):
+        def anti_cheat(set, value):
+            def load():
+                try:
+                    with open("mods/cheater.json", "r") as f:
+                        return json.load(f)
+                except ValueError:
+                    print("Error loading settings")
+                    return {}
+
+            def save(file):
+                with open('mods/cheater.json', 'w') as outfile:
+                    json.dump(file, outfile)
+
+            r = load()
+            name, times, miinus = r["name"], r["times"], r["minus"]
+
+            if set:
+                if name == "Dragory":
+                    if time > 8 and time < 15:
+                        times += 1
+                        if times >= 3:
+                            miinus += 20
+                    else:
+                        times = 0
+                        miinus = 0
+                    r["times"], r["minus"] = times, miinus
+                    save(r)
+            else:
+                if name == "Dragory":
+                    ov = value
+                    value *= (100 - miinus) / 100
+                    value = round(value)
+                    if value < 0:
+                        value = 1
+                    print("old: %s, new: %s" % (ov, value))
+                    return value
+
         cons_bonus = self.active_cons_boost
         item_bonus = self.active_boost
+        #anti_cheat(True, 0)
 
         def get_minus_score(score):
             return_score = score
@@ -131,6 +170,7 @@ class coffee():
                     money *= self.prestige_bonus / 100 + 1
                     money *= 1 - (self.event_minus["drop"] / 100)
                     money = ceil(money)
+                    #money = anti_cheat(False, money)
                     self.money += money
                 else:
                     money = randint(1, 10)
@@ -138,6 +178,7 @@ class coffee():
                     money *= self.prestige_bonus / 100 + 1
                     money *= 1 - (self.event_minus["drop"] / 100)
                     money = ceil(money)
+                    #anti_cheat(False, money)
                     self.money += money
 
                 if self.notify_reply:
@@ -291,6 +332,9 @@ class coffee():
         score *= cons_bonus["score"] / 100 + 1
         score *= self.prestige_bonus / 100 + 1
         score *= 1 - (self.event_minus["score"] / 100)
+
+        #score = anti_cheat(False, score)
+
 
         coffee_crit = False
         if cons_bonus["crit"] != 0:
