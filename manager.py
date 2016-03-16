@@ -6,8 +6,8 @@ import datetime, re, humanize
 from mods import coffee
 from operator import attrgetter
 from mods import illumicoffee
-from math import sqrt
-from mods.farm import farm
+from mods.item2 import inventory
+
 class manager:
     def __init__(self):
         def load_file(path, json_bool):
@@ -56,11 +56,14 @@ class manager:
             return humanize.intword(number)
 
     def save_file(self):
+
+
         d = {"mods/brew_que.p": self.brew_que,
              "mods/brewers2.p": self.brewers,
              "mods/illuminati.p": self.illuminati}
         for path, obj in d.items():
             with open(path, "wb") as outfile: pickle.dump(obj, outfile)
+
 
     def brew_score(self, p):
         top_score = []
@@ -248,13 +251,8 @@ class manager:
 
         if arg == "all":
             if name in self.brewers.keys():
-                if len(self.brewers[name].inventory.consumables) is not 0:
-                    for i in range(0, len(self.brewers[name].inventory.consumables)):
-                        r = self.brewers[name].cons_use(0)
-                        self.msg_que.append((id, r))
-                    self.save_file()
-                else:
-                    self.msg_que.append((id, "Sinulla ei ole itemeitä."))
+                r = self.brewers[name].cons_use(0, True)
+                self.msg_que.append((id, r))
         else:
             try:
                 slot = int(arg) - 1
@@ -264,18 +262,14 @@ class manager:
             if slot > 3:
                 self.msg_que.append((id, "Error: index over 4."))
                 return
+            if slot < 0:
+                self.msg_que.append((id, "Error: index less than 0."))
+                return
 
             if name in self.brewers.keys():
-                if len(self.brewers[name].inventory.consumables) is not 0:
-                    try:
-                        r = self.brewers[name].cons_use(slot)
-                    except IndexError:
-                        r = "Error: no consumable in slot"
-
-                    self.save_file()
-                    self.msg_que.append((id, r))
-                else:
-                    self.msg_que.append((id, "Sinulla ei ole itemeitä."))
+                r = self.brewers[name].cons_use(slot, False)
+                self.save_file()
+                self.msg_que.append((id, r))
 
     def brew_status(self):
         avgs = []
@@ -453,7 +447,7 @@ class manager:
                                 self.brewers[name].inventory.items.pop(3)
                             self.brewers[name].inventory.items.append(new_item[2])
                             self.brewers[name].money -= new_item[1]
-                            self.brewers[name].item_affix_add()
+                            self.brewers[name].inventory.item_set_bonus()
                             self.save_file()
                             self.msg_que.append((p["id"], "Esine ostettu."))
                         elif new_item[0] == "cons":
@@ -518,4 +512,5 @@ class manager:
             if p["args"][0] == "pic":
                 return self.brewers[name].farm_stats(True)
 
-
+    def update_things(self):
+        pass

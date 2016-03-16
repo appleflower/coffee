@@ -2,7 +2,6 @@ import xml.etree.ElementTree as etree
 from random import choice, randint, uniform
 from math import ceil
 
-
 class item:
     def __init__(self):
         i = self.create()
@@ -133,11 +132,19 @@ class inventory:
 
             return items_txt
 
-    def item_set_bonus(self):
-        for i in self.items:
-            assert isinstance(i, item)
-            for stat, value in i.stats.items():
-                self.item_bonus[stat] += value
+    def cons_bonus_print(self):
+        txt = ""
+        txt += "Boonukset seuraavaan keittoon:\n"
+        for x in self.cons_bonus:
+            if self.cons_bonus[x] is not 0:
+                txt += "{0}: {1}%\n".format(x.capitalize(), self.cons_bonus[x])
+        return txt
+
+    def cons_drop(self):
+        if len(self.consumables) < 4:
+            dropped_cons = consumable()
+            self.consumables.append(dropped_cons)
+            return "%s %s" % (dropped_cons.name.capitalize(),dropped_cons.grade)
 
     def cons_set_bonus(self, slot, use_all_cons):
         if use_all_cons:
@@ -146,7 +153,10 @@ class inventory:
                 self.cons_bonus[c.type] += c.get_cons_bonus()
         else:
             tyyppi, value = self.consumables[slot].type, self.consumables[slot].get_cons_bonus()
+            r_txt = "Boonus seuraavaan keittoon: %s: %s" % (tyyppi.capitalize(), value)
+            r_txt += "%"
             self.cons_bonus[tyyppi] += value
+            return r_txt
 
     def item_scrap(self, slot):
         scrap_prizes = {"Trash": 100, "Common": 200, "Rare": 300, "Epic": 400, "Celestial": 500}
@@ -159,17 +169,42 @@ class inventory:
         self.scraps += ceil(total_scraps)
         self.items.pop(slot)
 
-    def item_drop(self):
-        if len(self.items) == 4:
-            self.item_que = item()
-        else:
-            self.items.append(item())
-            self.item_set_bonus()
+    def item_set_bonus(self):
+        for i in self.items:
+            assert isinstance(i, item)
+            for stat, value in i.stats.items():
+                self.item_bonus[stat] += value
 
-    def item_remove(self, slot, add_from_queue):
-        if add_from_queue:
+    def item_drop(self):
+        droppd_item = item()
+        if len(self.items) == 4:
+            self.item_que = droppd_item
+            return "*%s*, joka on queuessa" % droppd_item.type
+        else:
+            self.items.append(droppd_item)
+            self.item_set_bonus()
+            return "*%s* %s" % (droppd_item.type, droppd_item.name)
+
+    def item_remove(self, slot):
+        def item_remove_txt():
+            old_item = self.items[slot]
+            new_item = self.item_que
+
+            return "{0} poistettu.\n{1} {2} lisätty queuesta inventooriin.".format(
+                    old_item.name,
+                    new_item.type,
+                    new_item.name)
+
+        if self.item_que is not None:
+            r_txt = item_remove_txt()
             self.item_scrap(slot)
             self.items.append(self.item_que)
             self.item_que = None
+            self.item_set_bonus()
+            return r_txt
         else:
+            r_txt = "%s poistettu." % self.items[slot].name
             self.item_scrap(slot)
+            self.item_set_bonus()
+            return r_txt
+

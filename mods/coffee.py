@@ -4,7 +4,7 @@ from datetime import datetime
 from datetime import timedelta
 from math import ceil
 import humanize
-from mods import item
+from mods.item2 import inventory
 from mods import logger_sys as log
 from mods.farm import farm
 import json
@@ -19,23 +19,14 @@ class coffee():
         self.avg_score = 30
         self.drop_chance = 10
         self.last_brew = None
-        self.inventory = item.item()
-        self.active_boost, self.active_cons_boost = \
-            {"score": 0, "exp": 0, "grade": 0, "drop": 0}, \
-            {"score": 0, "exp": 0, "grade": 0, "drop": 0, "crit": 0}
+        self.inventory = inventory()
         self.event_minus = {"score": 0, "exp": 0, "grade": 0, "drop": 0}
         self.prestige_bonus = 0
         self.money = 0
         self.notify_reply = False
-        self.farm = farm.beanfarm("Kukkakaali")
 
-
-    def new_inv(self):
-        i_old = self.inventory.items
-        c_old = self.inventory.consumables
-        self.inventory = item.item()
-        self.inventory.items = i_old
-        self.inventory.consumables = c_old
+    def update_things(self):
+        self.inventory = inventory()
 
     def human_number(self, number):
         if number < 1000:
@@ -55,24 +46,24 @@ class coffee():
     def get_stats(self):
         req_exp = 20 + self.lvl * 2 + (self.lvl ** 3)
         exp = "%s/%s" % (self.human_number(self.exp), self.human_number(ceil(req_exp)))
-        self.item_affix_add()
 
         txt = "[{0}:](www.gmf.fi/blank)\n" \
               "*Lvl:* {1} ({2})\n" \
               "*Top Brew:* {3}, *Total Brews:* {4}\n" \
-              "*Money:* {5}, *Prestige bonus:* {6}%\n".format(
+              "*Money:* {5}, *Scraps:* {7} *Prestige bonus:* {6}%\n".format(
                 self.name,
                 self.human_number(self.lvl),
                 exp,
                 self.human_number(self.best_coffee),
                 self.coffees,
                 self.money,
-                self.prestige_bonus)
+                self.prestige_bonus,
+                self.inventory.scraps)
 
         txt += "\n[Bonuses:](www.gmf.fi/blank)\n"
-        for x in self.active_boost:
-            if self.active_boost[x] is not 0:
-                txt += "*{0}*: {1}%\n".format(x.capitalize(), self.active_boost[x])
+        for x in self.inventory.item_bonus:
+            if self.inventory.item_bonus[x] is not 0:
+                txt += "*{0}*: {1}%\n".format(x.capitalize(), self.inventory.item_bonus[x])
         return txt
 
     def brew2(self, time):
@@ -113,8 +104,8 @@ class coffee():
                     print("old: %s, new: %s" % (ov, value))
                     return value
 
-        cons_bonus = self.active_cons_boost
-        item_bonus = self.active_boost
+        cons_bonus = self.inventory.cons_bonus
+        item_bonus = self.inventory.item_bonus
         #anti_cheat(True, 0)
 
         def get_minus_score(score):
@@ -216,12 +207,14 @@ class coffee():
                     bonus_drop_c *= 1 - (self.event_minus["drop"] / 100)
                     self.drop_chance *= bonus_drop_c
                     if randint(0, 100) < self.drop_chance:
-                        txt += "\n`[DROP]` %s" % self.item_drop()
+                        txt += "\n`[DROP]` %s" % self.inventory.item_drop()
                         self.drop_chance = 10
                     else:
                         self.drop_chance += 10
-                    if randint(0, 50) < self.drop_chance:
-                        txt += "\n`[DROP]` %s" % self.cons_drop()
+
+                    if len(self.inventory.consumables) < 4:
+                        if randint(0, 50) < self.drop_chance:
+                            txt += "\n`[DROP]` %s" % self.inventory.cons_drop()
 
                     return txt
                 else:
@@ -333,9 +326,6 @@ class coffee():
         score *= self.prestige_bonus / 100 + 1
         score *= 1 - (self.event_minus["score"] / 100)
 
-        #score = anti_cheat(False, score)
-
-
         coffee_crit = False
         if cons_bonus["crit"] != 0:
             if randint(0, 100) < cons_bonus["crit"]:
@@ -349,7 +339,7 @@ class coffee():
         if score > self.best_coffee:
             self.best_coffee = score
 
-        self.active_cons_boost = {"score": 0, "exp": 0, "grade": 0, "drop": 0, "crit": 0}
+        self.inventory.cons_bonus = {"score": 0, "exp": 0, "grade": 0, "drop": 0, "crit": 0}
 
         log.log_brew(self.name, time, score, self.lvl)
         return score, get_grade(score, time, minus, coffee_crit)
@@ -362,8 +352,8 @@ class coffee():
 
         gained_exp = ceil(score / 100 * grade)
         #item code exp
-        gained_exp *= self.active_cons_boost["exp"] / 100 + 1
-        gained_exp *= self.active_boost["exp"] / 100 + 1
+        gained_exp *= self.inventory.item_bonus["exp"] / 100 + 1
+        gained_exp *= self.inventory.cons_bonus["exp"] / 100 + 1
         gained_exp *= self.prestige_bonus / 100 + 1
         gained_exp *= 1 - (self.event_minus["exp"] / 100)
         gained_exp = round(gained_exp)
@@ -383,60 +373,30 @@ class coffee():
         self.exp = ceil(self.exp)
         return lvl_up, lvls_gained, gained_exp
 
-    def cons_drop(self):
-        res = self.inventory.cons_drop()
-        if res[0]:
-            return "%s %s" % (res[1]["name"].capitalize(), res[1]["grade"])
-
     def item_remove(self, slot):
-        removed = self.inventory.items[slot]
-        self.inventory.item_remove(slot)
+        try:
+            i = self.inventory.items[slot]
+        except IndexError:
+            return "Itemiä ei löytynyt slotista"
 
-        if self.inventory.item_que is not None:
-            que_item = self.inventory.item_que
-            self.inventory.item_que = None
-            self.inventory.items.append(que_item)
-            self.item_affix_add()
-            return "{0} poistettu.\n{1} {2} lisätty queuesta inventooriin.".format(
-                    removed["name"],
-                    que_item["type"],
-                    que_item["name"])
+        return self.inventory.item_remove(slot)
+
+    def cons_use(self, slot, use_all):
+        if use_all:
+            if len(self.inventory.consumables) is not 0:
+                self.inventory.cons_set_bonus(0, True)
+                return self.inventory.cons_bonus_print()
+            else:
+                return "Sinulla ei ole consumableja."
         else:
-            return removed["name"] + " poistettu."
-
-    def item_drop(self):
-        res = self.inventory.item_drop()
-        if res[0]:
-            self.item_affix_add()
-            return "*%s* %s" % (res[1]["type"], res[1]["name"])
-        else:
-            return "*%s*, joka on queuessa" % res[1]["type"]
-
-    def item_affix_add(self):
-        total_bonus = {"exp": 0, "score": 0, "grade": 0, "drop": 0}
-        for x in self.inventory.items:
-            for x2 in x["affix"]:
-                total_bonus[x2] += x["affix"][x2]
-
-        for x in total_bonus:
-            self.active_boost[x] = total_bonus[x]
-
-    def cons_use(self, slot):
-        cons = self.inventory.consumables[slot]
-        self.active_cons_boost[cons["type"]] += self.inventory.get_cons_bonus(cons["type"], cons["grade"])
-        self.inventory.consumables.pop(slot)
-        txt = ""
-        txt += "Boonukset seuraavaan keittoon:\n"
-        for x in self.active_cons_boost:
-            if self.active_cons_boost[x] is not 0:
-                txt += "{0}: {1}%\n".format(x.capitalize(), self.active_cons_boost[x])
-        return txt
+            if len(self.inventory.consumables) is not 0:
+                try:
+                    self.inventory.cons_set_bonus(slot, False)
+                    return self.inventory.cons_bonus_print()
+                except IndexError:
+                    return "Consumablea ei löytynyt slotista."
+            else:
+                return "Sinulla ei ole consumableja."
 
     def inventory_view(self):
         return self.inventory.get_inv_txt()
-
-    def farm_stats(self, pic):
-        if not pic:
-            return self.farm.farm_print(False)
-        else:
-            return self.farm.farm_print(True)

@@ -7,9 +7,13 @@ from manager import manager
 from datetime import datetime
 from mods import logger_sys as log
 from time import sleep
-id_channel = -116368010
+id_channel = -18779391
+#id_channel = 84340477
 id_priva = 84340477
+
 man = manager()
+#man.update_things()
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
@@ -101,6 +105,7 @@ def give_money(bot, update, args):
 
 def terasta(bot, update, args):
     p = packet(update, args)
+    print(p["id"])
     bot.sendMessage(p["id"], "Terästit kahviasi koskenkorvalla.")
 
 def brew_notify(bot, update, args):
@@ -128,7 +133,7 @@ def msg_que(bot):
                 if id is not None:
                     bot.sendMessage(id, msg, parse_mode=telegram.ParseMode.MARKDOWN)
                 else:
-                    bot.sendMessage(id_channel, msg, parse_mode=telegram.ParseMode.MARKDOWN)
+                    bot.sendMessage(id_priva, msg, parse_mode=telegram.ParseMode.MARKDOWN)
         man.msg_que = []
 
 def main():
@@ -180,4 +185,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-#kakkapkäle
